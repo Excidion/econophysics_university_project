@@ -1,0 +1,8 @@
+http://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KernelDensity.html
+http://scikit-learn.org/stable/auto_examples/neighbors/plot_kde_1d.html
+
+https://stackoverflow.com/questions/15415455/plotting-probability-density-function-by-sample-with-matplotlib
+
+https://de.wikipedia.org/wiki/Kerndichtesch%C3%A4tzer
+https://www.uni-muenster.de/Stochastik/paulsen/Abschlussarbeiten/Diplomarbeiten/Quigley.pdf
+
