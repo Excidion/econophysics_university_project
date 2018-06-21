@@ -45,23 +45,17 @@ def get_complementary_color(my_hex):
     return "#" + "".join(comp)
 
 
-def scale(value, scale_method):
-    if scale_method == None:
-        return value
-    else:
-        return scale_method(value)
-
-
-def plot_time_series_by_company(data, key, scale_method=None):
+def plot_time_series_by_company(data, key, scale_method="linear"):
     for company_name in data["Name"].unique():
         if company_name == "S&P500-Index":
             continue
 
         plot_data = data[data["Name"] == company_name]
-        plt.plot(plot_data["Date"], scale(plot_data[key], scale_method),
+        plt.plot(plot_data["Date"], plot_data[key],
                  label = company_name,
                  color = get_company_color(company_name))
 
+    plt.xscale(scale_method)
     plt.xlabel("Date")
     plt.ylabel(key)
     plt.legend()
@@ -79,21 +73,22 @@ def plot_time_series(data, ylabel):
     return plt
 
 
-def plot_probability_density(data, bin_num=100, scale_method=None):
+def plot_probability_density(data, bin_num=100, scale_method="linear"):
     sorted_values = data.dropna().sort_values()
     bins = np.linspace(sorted_values.min(), sorted_values.max(), bin_num)
     histogram, bins = np.histogram(sorted_values, bins=bins, density=True)
     bin_centers = 0.5 * (bins[1:] + bins[:-1])
-    plt.plot(bin_centers, scale(histogram, scale_method),
+    plt.plot(bin_centers, histogram,
              label = "Probability Density",
              color = get_company_color(data.name))
 
     mean, standard_deviation = stats.norm.fit(sorted_values)
     gauss = stats.norm.pdf(bins, mean, standard_deviation)
-    plt.plot(bins, scale(gauss, scale_method),
+    plt.plot(bins, gauss,
              color = get_complementary_color(get_company_color(data.name)),
              label = "Gaussian Fit")
 
+    plt.xscale(scale_method)
     plt.ylabel("Probability Density")
     plt.xlabel("Logarithmic Return")
     plt.legend()

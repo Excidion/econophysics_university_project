@@ -12,7 +12,7 @@ from analysis import extract_per_company, compute_log_returns
 
 
 # setup & options
-TODAY = datetime.date(year=2018, month=6, day=4) #datetime.date.today() TODO live
+TODAY = datetime.date(year=2018, month=6, day=4) #datetime.date.today()
 START_DATE = TODAY.replace(year = TODAY.year-25)
 END_DATE = TODAY
 
@@ -28,7 +28,7 @@ COMPANY_DICT = {"AMD": "AMD",
                 "PX": "Praxair",
                 "PEP": "Pepsi",
 
-                # excluded because to few data points (today-25y)
+                # excluded because not enough data points
                 #"DDAIF": "Daimler",
                 #"BP": "British Petroleum",
                 #"UPS": "UPS",
@@ -58,7 +58,7 @@ if __name__ == "__main__":
     """ PREPARATION """
     prepare_working_directory()
     path = get_part_1_path()
-    
+
     raw_data = get_data(COMPANY_DICT, START_DATE, END_DATE)
     close_data = extract_per_company(raw_data, "Close")
 
@@ -72,13 +72,9 @@ if __name__ == "__main__":
 
     """ TASK 1 """
     # computation
-    daily_log_returns = compute_log_returns(close_data, 1)
-    monthly_log_returns = compute_log_returns(close_data, 21)
-    biannual_log_returns = compute_log_returns(close_data, 126)
-
-    log_returns = {"daily": daily_log_returns,
-                   "monthly": monthly_log_returns,
-                   "biannual": biannual_log_returns}
+    log_returns = {"daily": compute_log_returns(close_data, 1),
+                   "monthly":  compute_log_returns(close_data, 21),
+                   "biannual": compute_log_returns(close_data, 126)}
 
     chosen_company_data = raw_data[raw_data["Name"].isin(CHOSEN_COMPANIES)]
 
@@ -88,12 +84,12 @@ if __name__ == "__main__":
     plt.close()
 
     # log price
-    plt = plot_time_series_by_company(chosen_company_data, "Close", np.log)
+    plt = plot_time_series_by_company(chosen_company_data, "Close", "log")
     plt.savefig(path + "log_price.pdf")
     plt.close()
 
     # log returns
-    plt = plot_time_series(daily_log_returns[CHOSEN_COMPANIES], "Logarithmic Returns")
+    plt = plot_time_series(log_returns["daily"][CHOSEN_COMPANIES], "Logarithmic Returns")
     plt.savefig(path + "daily_log_returns.pdf")
     plt.close()
 
