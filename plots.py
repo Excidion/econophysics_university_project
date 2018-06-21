@@ -55,7 +55,7 @@ def plot_time_series_by_company(data, key, scale_method="linear"):
                  label = company_name,
                  color = get_company_color(company_name))
 
-    plt.xscale(scale_method)
+    plt.yscale(scale_method)
     plt.xlabel("Date")
     plt.ylabel(key)
     plt.legend()
@@ -88,7 +88,7 @@ def plot_probability_density(data, bin_num=100, scale_method="linear"):
              color = get_complementary_color(get_company_color(data.name)),
              label = "Gaussian Fit")
 
-    plt.xscale(scale_method)
+    plt.yscale(scale_method)
     plt.ylabel("Probability Density")
     plt.xlabel("Logarithmic Return")
     plt.legend()
