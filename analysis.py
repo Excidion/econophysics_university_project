@@ -62,4 +62,4 @@ def compute_correlation_matrices(close_data):
         correlation_matrix = quarter_close_data.corr()
         list_of_CM.append(correlation_matrix)
 
-    return pd.concat(list_of_CM, keys=quarter_ends, axis=0)
+    return pd.concat(list_of_CM, keys=quarter_ends[1:], axis=0)
