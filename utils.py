@@ -1,14 +1,12 @@
 import os
 import pandas as pd
 pd.core.common.is_list_like = pd.api.types.is_list_like # stupid fix for pandas_datareader
-try:
-    from pandas_datareader import data as web
-except:
-    pass
+from pandas_datareader import data as web
+
 
 DATA_SOURCE = "morningstar"
 
-DATA_FOLDER = "stock_data"
+DATA_FOLDER = "stock-data"
 PART_1_FOLDER = "part_1"
 PART_2_FOLDER = "part_2"
 
@@ -46,23 +44,32 @@ def download_data(company_ticker, start_date, end_date, company_dictionary):
 
 
 def get_savepoint_path(company_ticker, start_date, end_date):
-    return "{}{}/{}_{}_{}.pickle".format(get_working_directory_path(),
-                                         DATA_FOLDER,
-                                         company_ticker,
-                                         start_date,
-                                         end_date)
+    return "{}{}_{}_{}.pickle".format(get_data_storage_path(),
+                                      company_ticker,
+                                      start_date,
+                                      end_date)
 
 
 def prepare_working_directory():
-    for folder in [DATA_FOLDER, PART_1_FOLDER, PART_2_FOLDER]:
-        if not os.path.exists(get_working_directory_path() + folder):
-            os.makedirs(get_working_directory_path() + folder)
+    paths = [get_data_storage_path(), get_part_1_path(), get_part_2_path()]
+
+    for path in paths:
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+    for path in [p for p in paths if DATA_FOLDER not in p]: # don't remove datasets
+        for file in os.listdir(path):
+            os.remove(path + file)
+
 
 def get_part_1_path():
     return get_working_directory_path() + PART_1_FOLDER + "/"
 
 def get_part_2_path():
     return get_working_directory_path() + PART_2_FOLDER + "/"
+
+def get_data_storage_path():
+    return get_working_directory_path() + DATA_FOLDER +"_"+ DATA_SOURCE + "/"
 
 def get_working_directory_path():
     return os.getcwd().replace("\\","/") + "/"
