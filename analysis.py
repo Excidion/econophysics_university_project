@@ -50,3 +50,16 @@ def compute_volatility(close_data, timesteps):
             volatility.loc[deltaT, company_name] = l_r[company_name].var()
 
     return volatility
+
+
+def compute_correlation_matrices(close_data):
+    quarter_ends = close_data[close_data.index.is_quarter_end].index
+
+    list_of_CM = []
+    for i in range(len(quarter_ends)-1):
+        quarter_close_data = close_data[(close_data.index <= quarter_ends[i+1]) &
+                                        (close_data.index > quarter_ends[i])]
+        correlation_matrix = quarter_close_data.corr()
+        list_of_CM.append(correlation_matrix)
+
+    return pd.concat(list_of_CM, keys=quarter_ends, axis=0)

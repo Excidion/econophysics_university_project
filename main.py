@@ -8,8 +8,7 @@ from scipy import stats
 # local modules
 from utils import get_data, prepare_working_directory, get_part_1_path, get_part_2_path
 from plots import plot_time_series_by_company, plot_time_series, plot_probability_density
-from analysis import extract_per_company, compute_log_returns, generate_fake_close_data, compute_volatility
-
+from analysis import *
 
 # setup & options
 TODAY = datetime.date(year=2018, month=6, day=4) #datetime.date.today()
@@ -160,3 +159,4 @@ if __name__ == "__main__":
     """ PART 2 """
     """ TASK 1 """
     path = get_part_2_path()
+    correlation_matrices = compute_correlation_matrices(close_data)
