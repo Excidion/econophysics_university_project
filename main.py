@@ -160,6 +160,3 @@ if __name__ == "__main__":
     """ PART 2 """
     """ TASK 1 """
     path = get_part_2_path()
-    raw_data["Category"] = "Dope" # TODO web.get_nasdaq_symbols() lookup -> https://stackoverflow.com/questions/46290969/pandas-datareader-ticker-data-type-of-get-nasdaq-symbols
-    category_data = raw_data.sort_values("Category")
-    # TODO webm animation of gliding mean

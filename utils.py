@@ -5,6 +5,8 @@ from pandas_datareader import data as web
 
 
 DATA_SOURCE = "morningstar"
+SECTOR_SOURCE = "iex-tops"
+
 
 DATA_FOLDER = "stock-data"
 PART_1_FOLDER = "part_1"
@@ -37,9 +39,17 @@ def get_data(company_dictionary, start_date, end_date):
 
 def download_data(company_ticker, start_date, end_date, company_dictionary):
     print("Downloading data for {}...".format(company_dictionary[company_ticker]))
+
+    # time series data
     data = web.DataReader(company_ticker, DATA_SOURCE, start_date, end_date)
     data = data.reset_index()
     data["Name"] = data["Symbol"].apply(lambda x: company_dictionary[x])
+
+    try: # sector data
+        data["Sector"] = web.DataReader(company_ticker, SECTOR_SOURCE).loc["sector", 0]
+    except KeyError: # should only happen for Index (eg. S&P500)
+        data["Sector"] = None
+
     return data
 
 
