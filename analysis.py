@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from sklearn.neighbors import KernelDensity
 
 
 def extract_per_company(data, key):
@@ -21,3 +20,33 @@ def compute_log_returns(close_data, delta_t):
         log_returns = pd.concat([log_returns, l_r], axis=1)
 
     return log_returns
+
+
+def generate_fake_close_data(data):
+    close_data = extract_per_company(data, "Close")
+    log_returns = compute_log_returns(close_data, 1)
+
+    fake_close_data = pd.DataFrame()
+    for company_name in data["Name"].unique():
+        company_data = data[data["Name"] == company_name]
+        starting_value = company_data[company_data["Date"] == company_data["Date"].min()]["Close"][0]
+
+        shuffled_log_returns = log_returns[company_name].sample(frac=1).reset_index(drop=True)
+        time_series = np.cumsum(shuffled_log_returns).shift(1).fillna(0)
+        time_series += np.log(starting_value)
+        time_series.index = log_returns[company_name].index
+
+        fake_close_data["Generated from " + company_name] = time_series
+
+    return fake_close_data
+
+
+def compute_volatility(close_data, timesteps):
+    volatility = pd.DataFrame(columns=close_data.keys(), index=timesteps)
+    volatility.index.name = r"$\Delta t$"
+    for deltaT in timesteps:
+        l_r = compute_log_returns(close_data, deltaT)
+        for company_name in l_r.keys():
+            volatility.loc[deltaT, company_name] = l_r[company_name].var()
+
+    return volatility

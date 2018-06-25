@@ -1,12 +1,18 @@
 import os
 import pandas as pd
 pd.core.common.is_list_like = pd.api.types.is_list_like # stupid fix for pandas_datareader
-from pandas_datareader import data as web
+try:
+    from pandas_datareader import data as web
+except:
+    pass
 
 DATA_SOURCE = "morningstar"
 
 DATA_FOLDER = "stock_data"
 PART_1_FOLDER = "part_1"
+PART_2_FOLDER = "part_2"
+
+
 
 
 def get_data(company_dictionary, start_date, end_date):
@@ -48,12 +54,15 @@ def get_savepoint_path(company_ticker, start_date, end_date):
 
 
 def prepare_working_directory():
-    for folder in [DATA_FOLDER, PART_1_FOLDER]:
+    for folder in [DATA_FOLDER, PART_1_FOLDER, PART_2_FOLDER]:
         if not os.path.exists(get_working_directory_path() + folder):
             os.makedirs(get_working_directory_path() + folder)
 
 def get_part_1_path():
     return get_working_directory_path() + PART_1_FOLDER + "/"
+
+def get_part_2_path():
+    return get_working_directory_path() + PART_2_FOLDER + "/"
 
 def get_working_directory_path():
     return os.getcwd().replace("\\","/") + "/"

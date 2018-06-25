@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 from scipy import stats
 
 # based on company logos
-COMPANY_COLORS = {"Apple": "#666666",
+COMPANY_COLORS = {"S&P500-Index": "#000000",
+                  "Apple": "#666666",
                   "IBM": "#1971C2",
                   "Microsoft": "#7FBA00", #"#F25022",
                   "3M": "#EF1429",
@@ -36,13 +37,15 @@ def get_company_color(name):
         return None
 
 def get_complementary_color(my_hex):
-    if my_hex == None:
+    if my_hex == None or my_hex == "#000000": # dont return white for black
         return None
     if my_hex[0] == "#":
         my_hex = my_hex[1:]
     rgb = (my_hex[0:2], my_hex[2:4], my_hex[4:6])
     comp = ['%02X' % (255 - int(a, 16)) for a in rgb]
     return "#" + "".join(comp)
+
+
 
 
 def plot_time_series_by_company(data, key, scale_method="linear"):
@@ -62,35 +65,42 @@ def plot_time_series_by_company(data, key, scale_method="linear"):
     return plt
 
 
-def plot_time_series(data, ylabel):
+def plot_time_series(data, ylabel="", scale_method=["linear","linear"]):
     for key in data.keys():
         plt.plot(data[key],
                  label = key,
                  color = get_company_color(key))
+
+        plt.xscale(scale_method[0])
+        plt.yscale(scale_method[1])
         plt.xlabel(data.index.name)
         plt.ylabel(ylabel)
         plt.legend()
     return plt
 
 
-def plot_probability_density(data, bin_num=100, scale_method="linear"):
+
+
+def plot_probability_density(data, bin_num=100, scale_method=["linear","linear"], fit_gauss=False):
     sorted_values = data.dropna().sort_values()
     bins = np.linspace(sorted_values.min(), sorted_values.max(), bin_num)
     histogram, bins = np.histogram(sorted_values, bins=bins, density=True)
     bin_centers = 0.5 * (bins[1:] + bins[:-1])
     plt.plot(bin_centers, histogram,
-             label = "Probability Density",
-             color = get_company_color(data.name))
+             color = get_company_color(data.name),
+             label = "Histogram")
 
-    mean, standard_deviation = stats.norm.fit(sorted_values)
-    gauss = stats.norm.pdf(bins, mean, standard_deviation)
-    plt.plot(bins, gauss,
-             color = get_complementary_color(get_company_color(data.name)),
-             label = "Gaussian Fit")
+    if fit_gauss:
+        mean, standard_deviation = stats.norm.fit(sorted_values)
+        gauss = stats.norm.pdf(bins, mean, standard_deviation)
+        plt.plot(bins, gauss,
+                 color = get_complementary_color(get_company_color(data.name)),
+                 label = "Gaussian Fit")
+        plt.legend()
 
-    plt.yscale(scale_method)
+    plt.xscale(scale_method[0])
+    plt.yscale(scale_method[1])
     plt.ylabel("Probability Density")
     plt.xlabel("Logarithmic Return")
-    plt.legend()
-
+    
     return plt

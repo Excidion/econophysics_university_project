@@ -6,9 +6,9 @@ import os
 from scipy import stats
 
 # local modules
-from utils import get_data, prepare_working_directory, get_part_1_path
+from utils import get_data, prepare_working_directory, get_part_1_path, get_part_2_path
 from plots import plot_time_series_by_company, plot_time_series, plot_probability_density
-from analysis import extract_per_company, compute_log_returns
+from analysis import extract_per_company, compute_log_returns, generate_fake_close_data, compute_volatility
 
 
 # setup & options
@@ -24,7 +24,6 @@ COMPANY_DICT = {"AMD": "AMD",
                 "HD": "Home Depot",
                 "TXN": "Texas Instruments",
                 "FDX": "FedEx",
-                "DIS": "Walt Disney",
                 "PX": "Praxair",
                 "PEP": "Pepsi",
 
@@ -39,6 +38,7 @@ COMPANY_DICT = {"AMD": "AMD",
                 #"NVDA": "Nvidia",
 
                 # excluded for other reasons
+                #"DIS": "Walt Disney", # already enough companies
                 #"PG": "Procter & Gamble", # blue similar to Pepsi
                 #"MSFT": "Microsoft", # 4 colors wtf MS
                 #"MMM": "3M", # red similar to coca cola
@@ -70,6 +70,7 @@ if __name__ == "__main__":
 
 
 
+    """ PART 1 """
     """ TASK 1 """
     # computation
     log_returns = {"daily": compute_log_returns(close_data, 1),
@@ -97,16 +98,31 @@ if __name__ == "__main__":
 
 
     """ TASK 2 """
-    # TODO
+    for scale_method in [["linear","linear"], ["linear","log"], ["log","log"]]:
+        for company_name in COMPANY_DICT.values():
+            for dataset in log_returns:
+                plt = plot_probability_density(data = log_returns[dataset][company_name],
+                                               scale_method = scale_method)
+                plt.gca().get_lines()[-1].set_label(dataset) # re-label based on dataset
+
+            # edit existing colors and replace with fixed order
+            colors = ["red", "indigo", "blue"]
+            for i, line in enumerate(plt.gca().get_lines()):
+                line.set_color(colors[i])
+
+            plt.legend()
+            plt.savefig("{}{}_log-return-densities_{}.pdf".format(path, company_name, "X".join(scale_method)))
+            plt.close()
 
 
 
 
     """ TASK 3 """
-    # TODO make log plots
     for dataset in log_returns:
         for company_name in CHOSEN_COMPANIES:
-            plt = plot_probability_density(log_returns[dataset][company_name], 100)
+            plt = plot_probability_density(data = log_returns[dataset][company_name],
+                                           scale_method = ["linear", "log"],
+                                           fit_gauss = True)
             plt.savefig("{}{}_{}-log-return-density.pdf".format(path, company_name, dataset))
             plt.close()
 
@@ -114,10 +130,36 @@ if __name__ == "__main__":
 
 
     """ TASK 4 """
-    # TODO
+    fake_close_data = generate_fake_close_data(chosen_company_data)
+    fake_log_returns = {"monthly":  compute_log_returns(fake_close_data, 21),
+                        "biannual": compute_log_returns(fake_close_data, 126)}
+
+    for dataset in fake_log_returns:
+        for company_name in fake_log_returns[dataset].keys():
+            plt = plot_probability_density(data = fake_log_returns[dataset][company_name],
+                                           scale_method = ["linear", "log"],
+                                           fit_gauss = True)
+            plt.savefig("{}{}_{}-log-return-density.pdf".format(path, company_name, dataset))
+            plt.close()
 
 
 
 
     """ TASK 5 """
-    # TODO
+    volatility = compute_volatility(close_data, range(1,253))
+    plt = plot_time_series(volatility, "Volatility", ["log", "log"])
+    x = np.linspace(1, 253, 253)
+    plt.plot(x, x, label="WTF", color="pink") # reference line TODO find useful slope
+    plt.legend()
+    plt.savefig(path + "volatility.pdf")
+    plt.close()
+
+
+
+
+    """ PART 2 """
+    """ TASK 1 """
+    path = get_part_2_path()
+    raw_data["Category"] = "Dope" # TODO web.get_nasdaq_symbols() lookup -> https://stackoverflow.com/questions/46290969/pandas-datareader-ticker-data-type-of-get-nasdaq-symbols
+    category_data = raw_data.sort_values("Category")
+    # TODO webm animation of gliding mean
