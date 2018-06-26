@@ -159,3 +159,4 @@ if __name__ == "__main__":
     """ PART 2 """
     """ TASK 1 """
     path = get_part_2_path()
+    correlation_matrices = compute_correlation_matrices(close_data)
