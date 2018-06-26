@@ -7,7 +7,7 @@ from scipy import stats
 
 # local modules
 from utils import get_data, prepare_working_directory, get_part_1_path, get_part_2_path
-from plots import plot_time_series_by_company, plot_time_series, plot_probability_density
+from plots import plot_time_series_by_company, plot_time_series, plot_probability_density, plot_correlation_matrix
 from analysis import *
 
 # setup & options
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     path = get_part_1_path()
 
     raw_data = get_data(COMPANY_DICT, START_DATE, END_DATE)
-    close_data = extract_per_company(raw_data, "Close")
+    close_data = extract_per_company(raw_data, "Close", group_by="Sector")
 
     # overview plot
     plt = plot_time_series_by_company(raw_data, "Close")
@@ -159,4 +159,3 @@ if __name__ == "__main__":
     """ PART 2 """
     """ TASK 1 """
     path = get_part_2_path()
-    correlation_matrices = compute_correlation_matrices(close_data)

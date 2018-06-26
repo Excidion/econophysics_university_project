@@ -48,7 +48,7 @@ def download_data(company_ticker, start_date, end_date, company_dictionary):
     try: # sector data
         data["Sector"] = web.DataReader(company_ticker, SECTOR_SOURCE).loc["sector", 0]
     except KeyError: # should only happen for Index (eg. S&P500)
-        data["Sector"] = None
+        data["Sector"] = "none"
 
     return data
 

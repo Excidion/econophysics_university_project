@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 
-def extract_per_company(data, key):
+def extract_per_company(data, key, group_by=None):
     key_data = pd.DataFrame(index=data["Date"].sort_values().unique())
     for company_name in data["Name"].unique():
         company_data = data[data["Name"] == company_name]
@@ -10,6 +10,17 @@ def extract_per_company(data, key):
         company_key = company_key.rename(columns={key: company_name})
         key_data = pd.concat([key_data, company_key], axis=1)
 
+    if group_by == None:
+        return key_data
+
+    key_values = data[group_by].unique()
+    names_by_key = []
+    for value in key_values:
+        names_in_group = data[data[group_by] == value]["Name"].unique()
+        for name in names_in_group:
+            names_by_key.append(name)
+
+    key_data = key_data[names_by_key]
     return key_data
 
 
