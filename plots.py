@@ -1,7 +1,9 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.pyplot import close as close_figures
 from scipy import stats
+import seaborn as sns
 
 # based on company logos
 COMPANY_COLORS = {"S&P500-Index": "#000000",
@@ -45,6 +47,10 @@ def get_complementary_color(my_hex):
     comp = ['%02X' % (255 - int(a, 16)) for a in rgb]
     return "#" + "".join(comp)
 
+
+def save_plot(figure, path, extension="pdf"):
+    figure.savefig("{}.{}".format(path, extension))
+    close_figures("all")
 
 
 
@@ -102,5 +108,17 @@ def plot_probability_density(data, bin_num=100, scale_method=["linear","linear"]
     plt.yscale(scale_method[1])
     plt.ylabel("Probability Density")
     plt.xlabel("Logarithmic Return")
-    
+
     return plt
+
+
+
+
+def plot_correlation_matrix(correlation_matrix):
+    fig = plt.figure()
+    ax = fig.add_subplot()
+    colorspace = sns.diverging_palette(220, 10, as_cmap=True)
+    sns.heatmap(correlation_matrix, ax=ax,
+                cmap=colorspace, vmax=1, vmin=-1, center=0,
+                square=True, linewidths=.5)
+    return fig

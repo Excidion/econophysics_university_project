@@ -7,8 +7,10 @@ from scipy import stats
 
 # local modules
 from utils import get_data, prepare_working_directory, get_part_1_path, get_part_2_path
-from plots import plot_time_series_by_company, plot_time_series, plot_probability_density, plot_correlation_matrix
-from analysis import *
+from plots import save_plot
+from plots import plot_time_series_by_company, plot_time_series, plot_probability_density # part 1
+from plots import plot_correlation_matrix # part 2
+from analysis import * # i know it's bad practice, but everthing is needed
 
 # setup & options
 TODAY = datetime.date(year=2018, month=6, day=4) #datetime.date.today()
@@ -54,22 +56,21 @@ CHOSEN_COMPANIES = ["FedEx", "Coca-Cola"]
 
 if __name__ == "__main__":
 
-    """ PREPARATION """
+    """ SETUP """
     prepare_working_directory()
-    path = get_part_1_path()
-
     raw_data = get_data(COMPANY_DICT, START_DATE, END_DATE)
     close_data = extract_per_company(raw_data, "Close", group_by="Sector")
 
     # overview plot
     plt = plot_time_series_by_company(raw_data, "Close")
-    plt.savefig("TimeSeries_Close.pdf")
-    plt.close()
+    save_plot(plt, "TimeSeries_Close")
 
 
 
 
     """ PART 1 """
+    path = get_part_1_path()
+
     """ TASK 1 """
     # computation
     log_returns = {"daily": compute_log_returns(close_data, 1),
@@ -80,18 +81,15 @@ if __name__ == "__main__":
 
     # price
     plt = plot_time_series_by_company(chosen_company_data, "Close")
-    plt.savefig(path + "price.pdf")
-    plt.close()
+    save_plot(plt, path + "price")
 
     # log price
     plt = plot_time_series_by_company(chosen_company_data, "Close", "log")
-    plt.savefig(path + "log_price.pdf")
-    plt.close()
+    save_plot(plt, path + "log_price")
 
     # log returns
     plt = plot_time_series(log_returns["daily"][CHOSEN_COMPANIES], "Logarithmic Returns")
-    plt.savefig(path + "daily_log_returns.pdf")
-    plt.close()
+    save_plot(plt, path + "daily_log_returns")
 
 
 
@@ -110,8 +108,7 @@ if __name__ == "__main__":
                 line.set_color(colors[i])
 
             plt.legend()
-            plt.savefig("{}{}_log-return-densities_{}.pdf".format(path, company_name, "X".join(scale_method)))
-            plt.close()
+            save_plot(plt, "{}{}_log-return-densities_{}".format(path, company_name, "X".join(scale_method)))
 
 
 
@@ -122,8 +119,7 @@ if __name__ == "__main__":
             plt = plot_probability_density(data = log_returns[dataset][company_name],
                                            scale_method = ["linear", "log"],
                                            fit_gauss = True)
-            plt.savefig("{}{}_{}-log-return-density.pdf".format(path, company_name, dataset))
-            plt.close()
+            save_plot(plt, "{}{}_{}-log-return-density".format(path, company_name, dataset))
 
 
 
@@ -138,8 +134,7 @@ if __name__ == "__main__":
             plt = plot_probability_density(data = fake_log_returns[dataset][company_name],
                                            scale_method = ["linear", "log"],
                                            fit_gauss = True)
-            plt.savefig("{}{}_{}-log-return-density.pdf".format(path, company_name, dataset))
-            plt.close()
+            save_plot(plt, "{}{}_{}-log-return-density".format(path, company_name, dataset))
 
 
 
@@ -150,8 +145,7 @@ if __name__ == "__main__":
     x = np.linspace(1, 253, 253)
     plt.plot(x, x, label="WTF", color="pink") # reference line TODO find useful slope
     plt.legend()
-    plt.savefig(path + "volatility.pdf")
-    plt.close()
+    save_plot(plt, path + "volatility")
 
 
 
@@ -160,3 +154,7 @@ if __name__ == "__main__":
     """ TASK 1 """
     path = get_part_2_path()
     correlation_matrices = compute_correlation_matrices(close_data)
+    for date in correlation_matrices.index.levels[0]:
+        correlation_matrix = correlation_matrices.loc[date]
+        plt = plot_correlation_matrix(correlation_matrix)
+        save_plot(plt, "{}correlation-matrix_{}".format(path, date.date()))
