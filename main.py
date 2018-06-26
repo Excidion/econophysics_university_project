@@ -10,9 +10,9 @@ from utils import get_data, prepare_working_directory, get_part_1_path, get_part
 from plots import save_plot
 from plots import plot_time_series_by_company, plot_time_series, plot_probability_density # part 1
 from plots import plot_correlation_matrix # part 2
-from analysis import * # i know it's bad practice, but everthing is needed
+from analysis import * # i wildcard imports are bad practice, but everthing is needed
 
-# setup & options
+# options & parameters
 TODAY = datetime.date(year=2018, month=6, day=4) #datetime.date.today()
 START_DATE = TODAY.replace(year = TODAY.year-25)
 END_DATE = TODAY
@@ -81,15 +81,15 @@ if __name__ == "__main__":
 
     # price
     plt = plot_time_series_by_company(chosen_company_data, "Close")
-    save_plot(plt, path + "price")
+    save_plot(plt, path + "timeseries_price_" + "-".join(CHOSEN_COMPANIES))
 
     # log price
     plt = plot_time_series_by_company(chosen_company_data, "Close", "log")
-    save_plot(plt, path + "log_price")
+    save_plot(plt, path + "timeseries_log-price_" + "-".join(CHOSEN_COMPANIES))
 
     # log returns
     plt = plot_time_series(log_returns["daily"][CHOSEN_COMPANIES], "Logarithmic Returns")
-    save_plot(plt, path + "daily_log_returns")
+    save_plot(plt, path + "timeseries_daily-log-returns_" + "-".join(CHOSEN_COMPANIES))
 
 
 
@@ -108,7 +108,7 @@ if __name__ == "__main__":
                 line.set_color(colors[i])
 
             plt.legend()
-            save_plot(plt, "{}{}_log-return-densities_{}".format(path, company_name, "X".join(scale_method)))
+            save_plot(plt, "{}log-return-densities_{}_{}".format(path, company_name, "X".join(scale_method)))
 
 
 

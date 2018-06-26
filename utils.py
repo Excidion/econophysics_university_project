@@ -19,6 +19,8 @@ def get_data(company_dictionary, start_date, end_date):
     all_data = pd.DataFrame()
     print("Interval is set from {} to {}.".format(start_date, end_date))
     print("Companies include: " + ", ".join(list(company_dictionary.values())))
+    print("Time series data is taken from " + DATA_SOURCE + ".")
+    print("Sector information is taken from " + SECTOR_SOURCE + ".")
 
     for company_ticker in company_dictionary:
 
