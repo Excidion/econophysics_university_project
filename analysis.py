@@ -40,7 +40,7 @@ def generate_fake_close_data(data):
     fake_close_data = pd.DataFrame()
     for company_name in data["Name"].unique():
         company_data = data[data["Name"] == company_name]
-        starting_value = company_data[company_data["Date"] == company_data["Date"].min()]["Close"][0]
+        starting_value = company_data.loc[company_data["Date"].idxmin(),"Close"]
 
         shuffled_log_returns = log_returns[company_name].sample(frac=1).reset_index(drop=True)
         time_series = np.cumsum(shuffled_log_returns).shift(1).fillna(0)
