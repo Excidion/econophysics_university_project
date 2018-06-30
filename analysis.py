@@ -74,3 +74,14 @@ def compute_correlation_matrices(close_data):
         list_of_CM.append(correlation_matrix)
 
     return pd.concat(list_of_CM, keys=quarter_ends[1:], axis=0)
+
+def compute_mean_correlation(correlation_matrices):
+    mean_correlation = pd.DataFrame(index = correlation_matrices.index.levels[0],
+                             columns = ["Mean Correlation"])
+
+    for date in correlation_matrices.index.levels[0]:
+        correlation_matrix = np.array(correlation_matrices.loc[date])
+        np.fill_diagonal(correlation_matrix, np.NAN) # no diagonal elements
+        mean_correlation.loc[date] = np.nanmean(correlation_matrix)
+
+    return mean_correlation

@@ -3,14 +3,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import datetime
 import os
-from scipy import stats
+from io import BytesIO
+import imageio
 
 # local modules
 from utils import get_data, prepare_working_directory, get_part_1_path, get_part_2_path
 from plots import save_plot
 from plots import plot_time_series_by_company, plot_time_series, plot_probability_density # part 1
 from plots import plot_correlation_matrix # part 2
-from analysis import * # i wildcard imports are bad practice, but everthing is needed
+from analysis import * # wildcard imports are bad practice, but here it does no harm
 
 # options & parameters
 TODAY = datetime.date(year=2018, month=6, day=4) #datetime.date.today()
@@ -106,8 +107,8 @@ if __name__ == "__main__":
             colors = ["red", "indigo", "blue"]
             for i, line in enumerate(plt.gca().get_lines()):
                 line.set_color(colors[i])
-
             plt.legend()
+
             save_plot(plt, "{}log-return-densities_{}_{}".format(path, company_name, "X".join(scale_method)))
 
 
@@ -154,7 +155,34 @@ if __name__ == "__main__":
     """ TASK 1 """
     path = get_part_2_path()
     correlation_matrices = compute_correlation_matrices(close_data)
+
+
+    """ TASK 2 """
+    # to find interesting matrices plot all single matrices and generate animation
+    video = imageio.get_writer(path + "animated_correlation-matrices.gif", mode='I', fps=4)
+
     for date in correlation_matrices.index.levels[0]:
+
         correlation_matrix = correlation_matrices.loc[date]
-        plt = plot_correlation_matrix(correlation_matrix)
-        save_plot(plt, "{}correlation-matrix_{}".format(path, date.date()))
+        plt = plot_correlation_matrix(correlation_matrix, "{} Q{}".format(date.year, date.quarter))
+
+        virtual_file = BytesIO()
+        plt.savefig(virtual_file) # convert to byte string
+        virtual_file.seek(0) # go to start of byte string
+        video.append_data(imageio.imread(virtual_file)) # read bytestring and add as frame
+
+        save_plot(plt, "{}correlation-matrix_{}Q{}".format(path, date.year, date.quarter))
+
+    video.close()
+
+
+    # total correlation matrix
+    plt = plot_correlation_matrix(close_data.corr())
+    save_plot(plt, path + "absolute_correlation-matrix")
+
+    mean_corr = compute_mean_correlation(correlation_matrices)
+
+    plot_time_series(mean_corr)
+
+    from matplotlib import pyplot as plt
+    plt.plot(mean_corr)

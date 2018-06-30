@@ -81,6 +81,7 @@ def plot_time_series(data, ylabel="", scale_method=["linear","linear"]):
         plt.yscale(scale_method[1])
         plt.xlabel(data.index.name)
         plt.ylabel(ylabel)
+    if len(data.keys()) > 1:
         plt.legend()
     return plt
 
@@ -114,11 +115,14 @@ def plot_probability_density(data, bin_num=100, scale_method=["linear","linear"]
 
 
 
-def plot_correlation_matrix(correlation_matrix):
+def plot_correlation_matrix(correlation_matrix, title=""):
     fig = plt.figure()
     ax = fig.add_subplot()
     colorspace = sns.diverging_palette(220, 10, as_cmap=True)
     sns.heatmap(correlation_matrix, ax=ax,
                 cmap=colorspace, vmax=1, vmin=-1, center=0,
                 square=True, linewidths=.5)
+    plt.xticks(rotation=45, rotation_mode="anchor", horizontalalignment="right")
+    plt.title(title)
+    plt.tight_layout()
     return fig

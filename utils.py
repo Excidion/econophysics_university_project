@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-pd.core.common.is_list_like = pd.api.types.is_list_like # stupid fix for pandas_datareader
+pd.core.common.is_list_like = pd.api.types.is_list_like # fix for pandas_datareader bug
 from pandas_datareader import data as web
 
 
@@ -69,7 +69,7 @@ def prepare_working_directory():
         if not os.path.exists(path):
             os.makedirs(path)
 
-    for path in [p for p in paths if DATA_FOLDER not in p]: # don't remove datasets
+    for path in [get_part_1_path(), get_part_2_path()]:
         for file in os.listdir(path):
             os.remove(path + file)
 
