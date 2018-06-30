@@ -76,11 +76,14 @@ def plot_time_series(data, ylabel="", scale_method=["linear","linear"]):
         plt.plot(data[key],
                  label = key,
                  color = get_company_color(key))
+    plt.xlabel(data.index.name)
+    plt.ylabel(ylabel)
 
+    if not scale_method[0] == "linear":
         plt.xscale(scale_method[0])
+    if not scale_method[1] == "linear":
         plt.yscale(scale_method[1])
-        plt.xlabel(data.index.name)
-        plt.ylabel(ylabel)
+
     if len(data.keys()) > 1:
         plt.legend()
     return plt

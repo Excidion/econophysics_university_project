@@ -89,7 +89,7 @@ if __name__ == "__main__":
     save_plot(plt, path + "timeseries_log-price_" + "-".join(CHOSEN_COMPANIES))
 
     # log returns
-    plt = plot_time_series(log_returns["daily"][CHOSEN_COMPANIES], "Logarithmic Returns")
+    plt = plot_time_series(log_returns["daily"][CHOSEN_COMPANIES], "Logarithmic Daily Returns")
     save_plot(plt, path + "timeseries_daily-log-returns_" + "-".join(CHOSEN_COMPANIES))
 
 
@@ -180,9 +180,8 @@ if __name__ == "__main__":
     plt = plot_correlation_matrix(close_data.corr())
     save_plot(plt, path + "absolute_correlation-matrix")
 
+
+    # time series of mean correlation
     mean_corr = compute_mean_correlation(correlation_matrices)
-
-    plot_time_series(mean_corr)
-
-    from matplotlib import pyplot as plt
-    plt.plot(mean_corr)
+    plt = plot_time_series(mean_corr, "Mean Correlation")
+    save_plot(plt, path + "mean_correlation-matrix")
