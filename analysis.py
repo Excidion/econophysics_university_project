@@ -75,9 +75,10 @@ def compute_correlation_matrices(close_data):
 
     return pd.concat(list_of_CM, keys=quarter_ends[1:], axis=0)
 
+
 def compute_mean_correlation(correlation_matrices):
     mean_correlation = pd.DataFrame(index = correlation_matrices.index.levels[0],
-                             columns = ["Mean Correlation"])
+                                    columns = ["Mean Correlation"])
 
     for date in correlation_matrices.index.levels[0]:
         correlation_matrix = np.array(correlation_matrices.loc[date])
@@ -85,3 +86,14 @@ def compute_mean_correlation(correlation_matrices):
         mean_correlation.loc[date] = np.nanmean(correlation_matrix)
 
     return mean_correlation
+
+
+def find_correlation_extrema(correlation_matrix):
+    nan_diagonal = np.zeros_like(correlation_matrix)
+    np.fill_diagonal(nan_diagonal, np.NAN)
+    cleaned_matrix = correlation_matrix - nan_diagonal
+    correlation_order = cleaned_matrix.abs().unstack().sort_values(ascending=False).dropna()
+
+    most_correlated = list(correlation_order.index[0])
+    least_correlated = list(correlation_order.index[-1])
+    return most_correlated, least_correlated

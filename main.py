@@ -10,13 +10,14 @@ import imageio
 from utils import get_data, prepare_working_directory, get_part_1_path, get_part_2_path
 from plots import save_plot
 from plots import plot_time_series_by_company, plot_time_series, plot_probability_density # part 1
-from plots import plot_correlation_matrix # part 2
+from plots import plot_correlation_matrix, plot_correlation_time_series # part 2
 from analysis import * # wildcard imports are bad practice, but here it does no harm
 
 # options & parameters
 TODAY = datetime.date(year=2018, month=6, day=4) #datetime.date.today()
 START_DATE = TODAY.replace(year = TODAY.year-25)
 END_DATE = TODAY
+
 
 COMPANY_DICT = {"AMD": "AMD",
                 "AAPL": "Apple",
@@ -28,24 +29,6 @@ COMPANY_DICT = {"AMD": "AMD",
                 "FDX": "FedEx",
                 "PX": "Praxair",
                 "PEP": "Pepsi",
-
-                # excluded because not enough data points
-                #"DDAIF": "Daimler",
-                #"BP": "British Petroleum",
-                #"UPS": "UPS",
-                #"LMT": "Lockheed Martin",
-                #"GS": "Goldman Sachs",
-                #"BAYRY": "Bayer",
-                #"SIEGY": "Siemens",
-                #"NVDA": "Nvidia",
-
-                # excluded for other reasons
-                #"DIS": "Walt Disney", # already enough companies
-                #"PG": "Procter & Gamble", # blue similar to Pepsi
-                #"MSFT": "Microsoft", # 4 colors wtf MS
-                #"MMM": "3M", # red similar to coca cola
-                #"GE": "General Electric", # blue similar to IBM
-                #"DE": "John Deere", # green similar to AMD
 
                 "SPX": "S&P500-Index"}
 
@@ -154,7 +137,7 @@ if __name__ == "__main__":
     """ PART 2 """
     """ TASK 1 """
     path = get_part_2_path()
-    correlation_matrices = compute_correlation_matrices(close_data)
+    correlation_matrices = compute_correlation_matrices(close_data.drop("S&P500-Index",axis=1))
 
 
     """ TASK 2 """
@@ -177,11 +160,18 @@ if __name__ == "__main__":
 
 
     # total correlation matrix
-    plt = plot_correlation_matrix(close_data.corr())
+    absolute_correlation_matrix = close_data.drop("S&P500-Index", axis=1).corr()
+    plt = plot_correlation_matrix(absolute_correlation_matrix)
     save_plot(plt, path + "absolute_correlation-matrix")
 
 
     # time series of mean correlation
-    mean_corr = compute_mean_correlation(correlation_matrices)
-    plt = plot_time_series(mean_corr, "Mean Correlation")
-    save_plot(plt, path + "mean_correlation-matrix")
+    mean_correlation = compute_mean_correlation(correlation_matrices)
+    plt = plot_time_series(mean_correlation, "Mean Correlation")
+    save_plot(plt, path + "mean_correlation")
+
+
+    # find strongly (un-)correlated companies
+    most_correlated, least_correlated = find_correlation_extrema(absolute_correlation_matrix)
+    plt = plot_correlation_time_series(correlation_matrices, [most_correlated, least_correlated])
+    save_plot(plt, path + "correlation_time-series")

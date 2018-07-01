@@ -129,3 +129,17 @@ def plot_correlation_matrix(correlation_matrix, title=""):
     plt.title(title)
     plt.tight_layout()
     return fig
+
+
+
+
+def plot_correlation_time_series(correlation_matrices, list_of_pairs):
+    for pair in list_of_pairs:
+        subset = correlation_matrices[correlation_matrices.index.get_level_values(None) == pair[0]][pair[1]]
+        plt.plot(subset.index.levels[0], subset.values, label=" & ".join(pair))
+
+    if len(list_of_pairs) > 1:
+        plt.legend()
+    plt.xlabel(subset.index.names[0])
+    plt.ylabel("Correlation")
+    return plt
