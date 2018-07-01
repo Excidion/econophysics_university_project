@@ -5,7 +5,7 @@ from matplotlib.pyplot import close as close_figures
 from scipy import stats
 import seaborn as sns
 
-# based on company logos
+# based on dominant company logo color
 COMPANY_COLORS = {"S&P500-Index": "#000000",
                   "Apple": "#666666",
                   "IBM": "#1971C2",
@@ -56,8 +56,8 @@ def save_plot(figure, path, extension="pdf"):
 
 def plot_time_series_by_company(data, key, scale_method="linear"):
     for company_name in data["Name"].unique():
-        if company_name == "S&P500-Index":
-            continue
+        if "Index" in company_name:
+            continue # do not plot stock indices
 
         plot_data = data[data["Name"] == company_name]
         plt.plot(plot_data["Date"], plot_data[key],
@@ -79,29 +79,29 @@ def plot_time_series(data, ylabel="", scale_method=["linear","linear"]):
     plt.xlabel(data.index.name)
     plt.ylabel(ylabel)
 
+    plt.yscale(scale_method[1])
     if not scale_method[0] == "linear":
         plt.xscale(scale_method[0])
-    if not scale_method[1] == "linear":
-        plt.yscale(scale_method[1])
 
-    if len(data.keys()) > 1:
+    if len(data.keys()) > 1: # no legend for single plot
         plt.legend()
     return plt
 
 
-
-
 def plot_probability_density(data, bin_num=100, scale_method=["linear","linear"], fit_gauss=False):
-    sorted_values = data.dropna().sort_values()
-    bins = np.linspace(sorted_values.min(), sorted_values.max(), bin_num)
-    histogram, bins = np.histogram(sorted_values, bins=bins, density=True)
+    values = data.dropna()
+    if scale_method[0] == "log":
+        values = values.abs()
+
+    bins = np.linspace(values.min(), values.max(), bin_num)
+    histogram, bins = np.histogram(values, bins=bins, density=True)
     bin_centers = 0.5 * (bins[1:] + bins[:-1])
     plt.plot(bin_centers, histogram,
              color = get_company_color(data.name),
              label = "Histogram")
 
     if fit_gauss:
-        mean, standard_deviation = stats.norm.fit(sorted_values)
+        mean, standard_deviation = stats.norm.fit(values)
         gauss = stats.norm.pdf(bins, mean, standard_deviation)
         plt.plot(bins, gauss,
                  color = get_complementary_color(get_company_color(data.name)),
@@ -116,8 +116,6 @@ def plot_probability_density(data, bin_num=100, scale_method=["linear","linear"]
     return plt
 
 
-
-
 def plot_correlation_matrix(correlation_matrix, title=""):
     fig = plt.figure()
     ax = fig.add_subplot()
@@ -129,8 +127,6 @@ def plot_correlation_matrix(correlation_matrix, title=""):
     plt.title(title)
     plt.tight_layout()
     return fig
-
-
 
 
 def plot_correlation_time_series(correlation_matrices, list_of_pairs):

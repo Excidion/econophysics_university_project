@@ -9,9 +9,14 @@ import imageio
 # local modules
 from utils import get_data, prepare_working_directory, get_part_1_path, get_part_2_path
 from plots import save_plot
-from plots import plot_time_series_by_company, plot_time_series, plot_probability_density # part 1
-from plots import plot_correlation_matrix, plot_correlation_time_series # part 2
 from analysis import * # wildcard imports are bad practice, but here it does no harm
+
+# part 1
+from plots import plot_time_series_by_company, plot_time_series, plot_probability_density
+# part 2
+from plots import plot_correlation_matrix, plot_correlation_time_series
+
+
 
 # options & parameters
 TODAY = datetime.date(year=2018, month=6, day=4) #datetime.date.today()
@@ -56,7 +61,6 @@ if __name__ == "__main__":
     path = get_part_1_path()
 
     """ TASK 1 """
-    # computation
     log_returns = {"daily": compute_log_returns(close_data, 1),
                    "monthly":  compute_log_returns(close_data, 21),
                    "biannual": compute_log_returns(close_data, 126)}
@@ -127,7 +131,7 @@ if __name__ == "__main__":
     volatility = compute_volatility(close_data, range(1,253))
     plt = plot_time_series(volatility, "Volatility", ["log", "log"])
     x = np.linspace(1, 253, 253)
-    plt.plot(x, x, label="WTF", color="pink") # reference line TODO find useful slope
+    plt.plot(x, x, label="Reference Line", color="pink") # reference line TODO find useful slope
     plt.legend()
     save_plot(plt, path + "volatility")
 
@@ -165,6 +169,7 @@ if __name__ == "__main__":
     save_plot(plt, path + "absolute_correlation-matrix")
 
 
+    """ Task 3 """
     # time series of mean correlation
     mean_correlation = compute_mean_correlation(correlation_matrices)
     plt = plot_time_series(mean_correlation, "Mean Correlation")

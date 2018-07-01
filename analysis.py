@@ -13,14 +13,14 @@ def extract_per_company(data, key, group_by=None):
     if group_by == None:
         return key_data
 
-    key_values = data[group_by].unique()
-    names_by_key = []
-    for value in key_values:
-        names_in_group = data[data[group_by] == value]["Name"].unique()
+    groups = data[group_by].unique()
+    names_by_group = []
+    for group in groups: # loop over groups
+        names_in_group = data[data[group_by] == group]["Name"].unique()
         for name in names_in_group:
-            names_by_key.append(name)
+            names_by_group.append(name) # add to list ordered by group
 
-    key_data = key_data[names_by_key]
+    key_data = key_data[names_by_group] # reorder names by list
     return key_data
 
 
@@ -90,10 +90,10 @@ def compute_mean_correlation(correlation_matrices):
 
 def find_correlation_extrema(correlation_matrix):
     nan_diagonal = np.zeros_like(correlation_matrix)
-    np.fill_diagonal(nan_diagonal, np.NAN)
-    cleaned_matrix = correlation_matrix - nan_diagonal
-    correlation_order = cleaned_matrix.abs().unstack().sort_values(ascending=False).dropna()
+    np.fill_diagonal(nan_diagonal, np.NAN) # create diagonal NAN matrix
+    cleaned_matrix = correlation_matrix - nan_diagonal # substraction with NAN returns NAN
+    correlation_order = cleaned_matrix.abs().unstack().sort_values().dropna()
 
-    most_correlated = list(correlation_order.index[0])
-    least_correlated = list(correlation_order.index[-1])
+    most_correlated = list(correlation_order.index[-1])
+    least_correlated = list(correlation_order.index[0])
     return most_correlated, least_correlated
