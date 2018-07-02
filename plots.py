@@ -68,6 +68,7 @@ def plot_time_series_by_company(data, key, scale_method="linear"):
     plt.xlabel("Date")
     plt.ylabel(key)
     plt.legend()
+    plt.tight_layout()
     return plt
 
 
@@ -85,6 +86,7 @@ def plot_time_series(data, ylabel="", scale_method=["linear","linear"]):
 
     if len(data.keys()) > 1: # no legend for single plot
         plt.legend()
+    plt.tight_layout()
     return plt
 
 
@@ -112,7 +114,7 @@ def plot_probability_density(data, bin_num=100, scale_method=["linear","linear"]
     plt.yscale(scale_method[1])
     plt.ylabel("Probability Density")
     plt.xlabel("Logarithmic Return")
-
+    plt.tight_layout()
     return plt
 
 
@@ -138,4 +140,5 @@ def plot_correlation_time_series(correlation_matrices, list_of_pairs):
         plt.legend()
     plt.xlabel(subset.index.names[0])
     plt.ylabel("Correlation")
+    plt.tight_layout()
     return plt

@@ -47,7 +47,7 @@ def generate_fake_close_data(data):
         time_series += np.log(starting_value)
         time_series.index = log_returns[company_name].index
 
-        fake_close_data["Generated from " + company_name] = time_series
+        fake_close_data["Generated-from-" + company_name] = time_series
 
     return fake_close_data
 
