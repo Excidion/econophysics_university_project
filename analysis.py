@@ -82,7 +82,7 @@ def compute_mean_correlation(correlation_matrices):
 
     for date in correlation_matrices.index.levels[0]:
         correlation_matrix = np.array(correlation_matrices.loc[date])
-        np.fill_diagonal(correlation_matrix, np.NAN) # no diagonal elements
+        np.fill_diagonal(correlation_matrix, np.NAN) # ignore diagonal elements
         mean_correlation.loc[date] = np.nanmean(correlation_matrix)
 
     return mean_correlation

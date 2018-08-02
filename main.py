@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 import datetime
 import os
 from io import BytesIO
@@ -34,7 +33,7 @@ COMPANY_DICT = {"AMD": "AMD",
                 "FDX": "FedEx",
                 "PX": "Praxair",
                 "PEP": "Pepsi",
-
+                # indices
                 "SPX": "S&P500-Index"}
 
 

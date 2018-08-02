@@ -33,9 +33,9 @@ COMPANY_COLORS = {"S&P500-Index": "#000000",
                   "Pepsi": "#134c9d"}
 
 def get_company_color(name):
-    if name in COMPANY_COLORS:
+    try:
         return COMPANY_COLORS[name]
-    else:
+    except KeyError:
         return None
 
 def get_complementary_color(my_hex):
